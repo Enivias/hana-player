@@ -1,0 +1,33 @@
+name: Build APK (Android 테스트용)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: 플랫폼 폴더 생성 + 설정 (setup.sh)
+        run: bash setup.sh
+
+      - name: APK 빌드
+        run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hana-player-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
